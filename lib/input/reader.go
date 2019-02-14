@@ -24,6 +24,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/Jeffail/benthos/lib/message/tracing"
+
 	"github.com/Jeffail/benthos/lib/input/reader"
 	"github.com/Jeffail/benthos/lib/log"
 	"github.com/Jeffail/benthos/lib/metrics"
@@ -184,6 +186,7 @@ func (r *Reader) loop() {
 			mRcvd.Incr(1)
 		}
 
+		tracing.InitSpans(r.typeStr, msg)
 		select {
 		case r.transactions <- types.NewTransaction(msg, r.responses):
 		case <-r.closeChan:
@@ -193,6 +196,7 @@ func (r *Reader) loop() {
 		select {
 		case res, open := <-r.responses:
 			if !open {
+				tracing.FinishSpans(msg)
 				return
 			}
 			if res.Error() != nil {
@@ -210,8 +214,10 @@ func (r *Reader) loop() {
 				}
 			}
 		case <-r.closeChan:
+			tracing.FinishSpans(msg)
 			return
 		}
+		tracing.FinishSpans(msg)
 	}
 }
 
