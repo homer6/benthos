@@ -30,10 +30,13 @@ import (
 
 	"github.com/Jeffail/benthos/lib/log"
 	"github.com/Jeffail/benthos/lib/message"
+	"github.com/Jeffail/benthos/lib/message/tracing"
 	"github.com/Jeffail/benthos/lib/metrics"
 	"github.com/Jeffail/benthos/lib/response"
 	"github.com/Jeffail/benthos/lib/types"
 	"github.com/Jeffail/benthos/lib/util/text"
+	"github.com/opentracing/opentracing-go"
+	olog "github.com/opentracing/opentracing-go/log"
 )
 
 //------------------------------------------------------------------------------
@@ -106,8 +109,9 @@ func tarArchive(hFunc headerFunc, msg types.Message) (types.Part, error) {
 	if err != nil {
 		return nil, err
 	}
-	return message.NewPart(buf.Bytes()).
-		SetMetadata(msg.Get(0).Metadata().Copy()), nil
+	newPart := msg.Get(0).Copy()
+	newPart.Set(buf.Bytes())
+	return newPart, nil
 }
 
 func zipArchive(hFunc headerFunc, msg types.Message) (types.Part, error) {
@@ -136,13 +140,15 @@ func zipArchive(hFunc headerFunc, msg types.Message) (types.Part, error) {
 	if err != nil {
 		return nil, err
 	}
-	return message.NewPart(buf.Bytes()).
-		SetMetadata(msg.Get(0).Metadata().Copy()), nil
+	newPart := msg.Get(0).Copy()
+	newPart.Set(buf.Bytes())
+	return newPart, nil
 }
 
 func binaryArchive(hFunc headerFunc, msg types.Message) (types.Part, error) {
-	return message.NewPart(message.ToBytes(msg)).
-		SetMetadata(msg.Get(0).Metadata().Copy()), nil
+	newPart := msg.Get(0).Copy()
+	newPart.Set(message.ToBytes(msg))
+	return newPart, nil
 }
 
 func linesArchive(hFunc headerFunc, msg types.Message) (types.Part, error) {
@@ -151,8 +157,9 @@ func linesArchive(hFunc headerFunc, msg types.Message) (types.Part, error) {
 		tmpParts[i] = part.Get()
 		return nil
 	})
-	return message.NewPart(bytes.Join(tmpParts, []byte("\n"))).
-		SetMetadata(msg.Get(0).Metadata().Copy()), nil
+	newPart := msg.Get(0).Copy()
+	newPart.Set(bytes.Join(tmpParts, []byte("\n")))
+	return newPart, nil
 }
 
 func jsonArrayArchive(hFunc headerFunc, msg types.Message) (types.Part, error) {
@@ -171,12 +178,10 @@ func jsonArrayArchive(hFunc headerFunc, msg types.Message) (types.Part, error) {
 		return nil, err
 	}
 
-	newPart := message.NewPart(nil)
+	newPart := msg.Get(0).Copy()
 	if err = newPart.SetJSON(array); err != nil {
 		return nil, fmt.Errorf("failed to marshal archived array into a JSON document: %v", err)
 	}
-	newPart.SetMetadata(msg.Get(0).Metadata().Copy())
-
 	return newPart, nil
 }
 
@@ -300,21 +305,25 @@ func (d *Archive) ProcessMessage(msg types.Message) ([]types.Message, types.Resp
 	d.mSent.Incr(1)
 	d.mBatchSent.Incr(1)
 
+	newMsg := msg.Copy()
 	newPart, err := d.archive(d.createHeaderFunc(msg), msg)
+	tracing.IterateWithSpan(newMsg, TypeArchive, func(i int, span opentracing.Span, p types.Part) error {
+		if err != nil {
+			FlagFail(p)
+			span.LogKV(
+				olog.String("event", "error"),
+				olog.String("type", err.Error()),
+			)
+		}
+		return nil
+	})
 	if err != nil {
 		d.log.Errorf("Failed to create archive: %v\n", err)
 		d.mErr.Incr(1)
-		msg.Iter(func(i int, p types.Part) error {
-			FlagFail(p)
-			return nil
-		})
-		msgs := [1]types.Message{msg}
-		return msgs[:], nil
+	} else {
+		d.mSucc.Incr(1)
+		newMsg.SetAll([]types.Part{newPart})
 	}
-	d.mSucc.Incr(1)
-
-	newMsg := message.New(nil)
-	newMsg.Append(newPart)
 
 	msgs := [1]types.Message{newMsg}
 	return msgs[:], nil
