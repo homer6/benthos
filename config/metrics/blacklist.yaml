@@ -38,4 +38,7 @@ metrics:
     paths: []
     patterns: []
   prefix: benthos
+tracing:
+  type: none
+  none: {}
 shutdown_timeout: 20s

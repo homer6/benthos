@@ -959,5 +959,13 @@ metrics:
     paths: []
     patterns: []
     child: {}
+tracing:
+  type: none
+  jaeger:
+    agent_address: localhost:6831
+    service_name: benthos
+    span_sample: 1
+    flush_interval: ""
+  none: {}
 shutdown_timeout: 20s
 

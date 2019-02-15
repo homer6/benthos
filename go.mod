@@ -19,6 +19,7 @@ require (
 	github.com/bsm/sarama-cluster v2.1.15+incompatible
 	github.com/cenkalti/backoff v2.1.0+incompatible
 	github.com/cespare/xxhash v1.1.0 // indirect
+	github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd // indirect
 	github.com/colinmarc/hdfs v1.1.3
 	github.com/containerd/continuity v0.0.0-20181203112020-004b46473808 // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
@@ -79,6 +80,8 @@ require (
 	github.com/streadway/amqp v0.0.0-20181205114330-a314942b2fd9
 	github.com/trivago/grok v1.0.0
 	github.com/trivago/tgo v1.0.5 // indirect
+	github.com/uber/jaeger-client-go v2.15.0+incompatible
+	github.com/uber/jaeger-lib v1.5.0+incompatible // indirect
 	go.opencensus.io v0.18.0 // indirect
 	golang.org/x/net v0.0.0-20181207154023-610586996380 // indirect
 	golang.org/x/oauth2 v0.0.0-20181203162652-d668ce993890 // indirect

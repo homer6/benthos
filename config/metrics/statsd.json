@@ -50,5 +50,9 @@
 			"network": "udp"
 		}
 	},
+	"tracing": {
+		"type": "none",
+		"none": {}
+	},
 	"shutdown_timeout": "20s"
 }

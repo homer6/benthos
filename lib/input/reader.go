@@ -189,6 +189,7 @@ func (r *Reader) loop() {
 		select {
 		case r.transactions <- types.NewTransaction(msg, r.responses):
 		case <-r.closeChan:
+			tracing.FinishSpans(msg)
 			return
 		}
 
