@@ -43,31 +43,17 @@
 	},
 	"metrics": {
 		"type": "http_server",
-		"prefix": "benthos",
-		"blacklist": {
-			"paths": [],
-			"patterns": [],
-			"child": {}
-		},
 		"http_server": {},
-		"prometheus": {
-			"push_url": "",
-			"push_interval": ""
-		},
-		"statsd": {
-			"address": "localhost:4040",
-			"flush_period": "100ms",
-			"network": "udp"
-		},
-		"whitelist": {
-			"paths": [],
-			"patterns": [],
-			"child": {}
-		}
+		"prefix": "benthos"
 	},
 	"tracing": {
-		"type": "none",
-		"none": {}
+		"type": "jaeger",
+		"jaeger": {
+			"agent_address": "localhost:6831",
+			"flush_interval": "",
+			"service_name": "benthos",
+			"span_sample": 1
+		}
 	},
 	"shutdown_timeout": "20s"
 }

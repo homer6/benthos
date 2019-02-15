@@ -21,6 +21,7 @@
 package main
 
 import (
+	"github.com/Jeffail/benthos/lib/tracing"
 	"bytes"
 	"encoding/json"
 	"flag"
@@ -479,6 +480,24 @@ func main() {
 		createJSON(t, filepath.Join(configsDir, "metrics", t+".json"), sanit)
 	}
 
+	// Create tracing configs for all types.
+	for t := range tracing.Constructors {
+		conf := config.New()
+		conf.Input.Processors = nil
+		conf.Output.Processors = nil
+		conf.Pipeline.Processors = nil
+
+		conf.Tracing.Type = t
+
+		sanit, err := conf.Sanitised()
+		if err != nil {
+			panic(err)
+		}
+
+		createYAML(t, filepath.Join(configsDir, "tracing", t+".yaml"), sanit)
+		createJSON(t, filepath.Join(configsDir, "tracing", t+".json"), sanit)
+	}
+
 	// Create buffers config
 	{
 		t := "buffers"
@@ -492,24 +511,6 @@ func main() {
 			panic(err)
 		}
 		sanit.Buffer = conf.Buffer
-
-		createYAML(t, filepath.Join(configsDir, t+".yaml"), sanit)
-		createJSON(t, filepath.Join(configsDir, t+".json"), sanit)
-	}
-
-	// Create metrics config
-	{
-		t := "metrics"
-
-		conf := config.New()
-		conf.Input.Processors = nil
-		conf.Output.Processors = nil
-
-		sanit, err := conf.Sanitised()
-		if err != nil {
-			panic(err)
-		}
-		sanit.Metrics = conf.Metrics
 
 		createYAML(t, filepath.Join(configsDir, t+".yaml"), sanit)
 		createJSON(t, filepath.Join(configsDir, t+".json"), sanit)
