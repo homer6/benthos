@@ -30,12 +30,10 @@ import (
 
 	"github.com/Jeffail/benthos/lib/log"
 	"github.com/Jeffail/benthos/lib/message"
-	"github.com/Jeffail/benthos/lib/message/tracing"
 	"github.com/Jeffail/benthos/lib/metrics"
 	"github.com/Jeffail/benthos/lib/response"
 	"github.com/Jeffail/benthos/lib/types"
 	"github.com/Jeffail/benthos/lib/util/text"
-	"github.com/opentracing/opentracing-go"
 	olog "github.com/opentracing/opentracing-go/log"
 )
 
@@ -306,23 +304,26 @@ func (d *Archive) ProcessMessage(msg types.Message) ([]types.Message, types.Resp
 	d.mBatchSent.Incr(1)
 
 	newMsg := msg.Copy()
+
+	spans := CreateSpans(newMsg, TypeArchive)
 	newPart, err := d.archive(d.createHeaderFunc(msg), msg)
-	tracing.IterateWithSpan(newMsg, TypeArchive, func(i int, span opentracing.Span, p types.Part) error {
-		if err != nil {
+	if err != nil {
+		newMsg.Iter(func(i int, p types.Part) error {
 			FlagFail(p)
-			span.LogKV(
+			spans[i].LogFields(
 				olog.String("event", "error"),
 				olog.String("type", err.Error()),
 			)
-		}
-		return nil
-	})
-	if err != nil {
+			return nil
+		})
 		d.log.Errorf("Failed to create archive: %v\n", err)
 		d.mErr.Incr(1)
 	} else {
 		d.mSucc.Incr(1)
 		newMsg.SetAll([]types.Part{newPart})
+	}
+	for _, s := range spans {
+		s.Finish()
 	}
 
 	msgs := [1]types.Message{newMsg}

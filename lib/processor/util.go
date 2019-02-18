@@ -197,7 +197,27 @@ func IteratePartsWithSpan(
 			exec(i)
 		}
 	}
+}
 
+// CreateSpans takes a message, extracts spans per message part and returns a
+// slice of child spans. The length of the returned slice is guaranteed to match
+// the message size.
+func CreateSpans(msg types.Message, operationName string) []opentracing.Span {
+	spans := make([]opentracing.Span, msg.Len())
+	msg.Iter(func(i int, part types.Part) error {
+		span := tracing.GetSpan(part)
+		if span == nil {
+			span = opentracing.StartSpan(operationName)
+		} else {
+			span = opentracing.StartSpan(
+				operationName,
+				opentracing.ChildOf(span.Context()),
+			)
+		}
+		spans[i] = span
+		return nil
+	})
+	return spans
 }
 
 //------------------------------------------------------------------------------
