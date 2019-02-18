@@ -46,14 +46,9 @@
 		"http_server": {},
 		"prefix": "benthos"
 	},
-	"tracing": {
-		"type": "jaeger",
-		"jaeger": {
-			"agent_address": "localhost:6831",
-			"flush_interval": "",
-			"service_name": "benthos",
-			"span_sample": 1
-		}
+	"tracer": {
+		"type": "none",
+		"none": {}
 	},
 	"shutdown_timeout": "20s"
 }

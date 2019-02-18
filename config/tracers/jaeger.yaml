@@ -35,7 +35,7 @@ metrics:
   type: http_server
   http_server: {}
   prefix: benthos
-tracing:
+tracer:
   type: jaeger
   jaeger:
     agent_address: localhost:6831

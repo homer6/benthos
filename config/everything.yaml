@@ -959,7 +959,7 @@ metrics:
     paths: []
     patterns: []
     child: {}
-tracing:
+tracer:
   type: none
   jaeger:
     agent_address: localhost:6831

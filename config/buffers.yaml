@@ -43,7 +43,7 @@ metrics:
   type: http_server
   http_server: {}
   prefix: benthos
-tracing:
+tracer:
   type: none
   none: {}
 shutdown_timeout: 20s

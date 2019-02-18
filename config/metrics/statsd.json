@@ -50,7 +50,7 @@
 			"network": "udp"
 		}
 	},
-	"tracing": {
+	"tracer": {
 		"type": "none",
 		"none": {}
 	},

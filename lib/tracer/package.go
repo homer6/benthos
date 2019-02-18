@@ -18,34 +18,5 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package tracing
-
-//------------------------------------------------------------------------------
-
-func init() {
-	Constructors[TypeNone] = TypeSpec{
-		constructor: NewNone,
-		description: `
-Do not send opentracing events anywhere.`,
-	}
-}
-
-//------------------------------------------------------------------------------
-
-type noopTracer struct{}
-
-func (n noopTracer) Close() error {
-	return nil
-}
-
-// Noop returns a tracer implementation that does nothing.
-func Noop() Type {
-	return noopTracer{}
-}
-
-// NewNone creates a noop tracer.
-func NewNone(config Config, opts ...func(Type)) (Type, error) {
-	return Noop(), nil
-}
-
-//------------------------------------------------------------------------------
+// Package tracer contains components able to send opentracing events.
+package tracer

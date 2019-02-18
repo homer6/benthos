@@ -89,7 +89,7 @@
 		"http_server": {},
 		"prefix": "benthos"
 	},
-	"tracing": {
+	"tracer": {
 		"type": "none",
 		"none": {}
 	},

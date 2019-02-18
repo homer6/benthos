@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package tracing
+package tracer
 
 import (
 	"bytes"
@@ -33,7 +33,7 @@ import (
 
 //------------------------------------------------------------------------------
 
-// Errors for the tracing package.
+// Errors for the tracer package.
 var (
 	ErrInvalidTracerType = errors.New("invalid tracer type")
 )
@@ -47,7 +47,7 @@ type TypeSpec struct {
 	sanitiseConfigFunc func(conf Config) (interface{}, error)
 }
 
-// Constructors is a map of all tracing types with their specs.
+// Constructors is a map of all tracer types with their specs.
 var Constructors = map[string]TypeSpec{}
 
 //------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ const (
 
 //------------------------------------------------------------------------------
 
-// Type is an interface implemented by all tracing types.
+// Type is an interface implemented by all tracer types.
 type Type interface {
 	// Close stops and cleans up the tracers resources.
 	Close() error
@@ -144,10 +144,10 @@ func (c *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 //------------------------------------------------------------------------------
 
-var header = "This document was generated with `benthos --list-tracing`" + `
+var header = "This document was generated with `benthos --list-tracers`" + `
 
-A tracing type represents a destination for Benthos to send opentracing events
-to such as Jaeger.
+A tracer type represents a destination for Benthos to send opentracing events to
+such as Jaeger.
 
 Many Benthos components create spans on messages passing through a pipeline, and
 so opentracing is a great way to analyse the pathways of individual messages.`
@@ -163,8 +163,8 @@ func Descriptions() string {
 	sort.Strings(names)
 
 	buf := bytes.Buffer{}
-	buf.WriteString("Tracing Types\n")
-	buf.WriteString(strings.Repeat("=", 13))
+	buf.WriteString("Tracer Types\n")
+	buf.WriteString(strings.Repeat("=", 12))
 	buf.WriteString("\n\n")
 	buf.WriteString(header)
 	buf.WriteString("\n\n")

@@ -1,10 +1,10 @@
-Tracing Types
-=============
+Tracer Types
+============
 
-This document was generated with `benthos --list-tracing`
+This document was generated with `benthos --list-tracers`
 
-A tracing type represents a destination for Benthos to send opentracing events
-to such as Jaeger.
+A tracer type represents a destination for Benthos to send opentracing events to
+such as Jaeger.
 
 Many Benthos components create spans on messages passing through a pipeline, and
 so opentracing is a great way to analyse the pathways of individual messages.

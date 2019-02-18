@@ -38,7 +38,7 @@ import (
 	"github.com/Jeffail/benthos/lib/pipeline"
 	"github.com/Jeffail/benthos/lib/processor"
 	"github.com/Jeffail/benthos/lib/processor/condition"
-	"github.com/Jeffail/benthos/lib/tracing"
+	"github.com/Jeffail/benthos/lib/tracer"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -480,22 +480,22 @@ func main() {
 		createJSON(t, filepath.Join(configsDir, "metrics", t+".json"), sanit)
 	}
 
-	// Create tracing configs for all types.
-	for t := range tracing.Constructors {
+	// Create tracer configs for all types.
+	for t := range tracer.Constructors {
 		conf := config.New()
 		conf.Input.Processors = nil
 		conf.Output.Processors = nil
 		conf.Pipeline.Processors = nil
 
-		conf.Tracing.Type = t
+		conf.Tracer.Type = t
 
 		sanit, err := conf.Sanitised()
 		if err != nil {
 			panic(err)
 		}
 
-		createYAML(t, filepath.Join(configsDir, "tracing", t+".yaml"), sanit)
-		createJSON(t, filepath.Join(configsDir, "tracing", t+".json"), sanit)
+		createYAML(t, filepath.Join(configsDir, "tracers", t+".yaml"), sanit)
+		createJSON(t, filepath.Join(configsDir, "tracers", t+".json"), sanit)
 	}
 
 	// Create buffers config
