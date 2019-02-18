@@ -62,6 +62,19 @@ func InitSpans(operationName string, msg types.Message) {
 	msg.SetAll(tracedParts)
 }
 
+// InitSpansFromParent sets up OpenTracing spans that are children of a parent
+// span on each message part.
+func InitSpansFromParent(parent opentracing.SpanContext, operationName string, msg types.Message) {
+	tracedParts := make([]types.Part, msg.Len())
+	msg.Iter(func(i int, p types.Part) error {
+		span := opentracing.StartSpan(operationName, opentracing.ChildOf(parent))
+		ctx := opentracing.ContextWithSpan(context.Background(), span)
+		tracedParts[i] = message.WithContext(ctx, p)
+		return nil
+	})
+	msg.SetAll(tracedParts)
+}
+
 // FinishSpans calls Finish on all message parts containing a span.
 func FinishSpans(msg types.Message) {
 	msg.Iter(func(i int, p types.Part) error {

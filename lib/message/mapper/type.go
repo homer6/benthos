@@ -332,14 +332,14 @@ partLoop:
 			}
 		}
 
-		mappedMsg.Append(message.NewPart(nil))
-		if err = mappedMsg.Get(-1).SetJSON(destObj.Data()); err != nil {
+		mappedPart := message.MetaPartCopy(msg.Get(i))
+		if err = mappedPart.SetJSON(destObj.Data()); err != nil {
 			t.mReqErr.Incr(1)
 			t.mReqErrJSON.Incr(1)
 			t.log.Errorf("Failed to marshal request map result in message part '%v'. Map contents: '%v'\n", i, destObj.String())
 			failed = append(failed, i)
 		} else {
-			mappedMsg.Get(-1).SetMetadata(msg.Get(i).Metadata().Copy())
+			mappedMsg.Append(mappedPart)
 		}
 	}
 
