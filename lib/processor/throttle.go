@@ -24,6 +24,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Jeffail/benthos/lib/message/tracing"
+
 	"github.com/Jeffail/benthos/lib/log"
 	"github.com/Jeffail/benthos/lib/metrics"
 	"github.com/Jeffail/benthos/lib/types"
@@ -103,6 +105,13 @@ func NewThrottle(
 // resulting messages or a response to be sent back to the message source.
 func (m *Throttle) ProcessMessage(msg types.Message) ([]types.Message, types.Response) {
 	m.mCount.Incr(1)
+
+	spans := tracing.CreateChildSpans(msg, TypeThrottle)
+	defer func() {
+		for _, s := range spans {
+			s.Finish()
+		}
+	}()
 
 	if since := time.Since(m.lastBatch); m.duration > since {
 		time.Sleep(m.duration - since)

@@ -423,11 +423,12 @@ partLoop:
 		}
 
 		if len(t.resMap) == 0 && len(t.resOptMap) == 0 {
-			newPart := response.Get(i).Copy()
+			newPart := message.MetaPartCopy(parts[i])
+			newPart.Set(response.Get(i).Get())
 
 			// Overwrite payload parts with new parts metadata.
-			metadata := parts[i].Metadata()
-			newPart.Metadata().Iter(func(k, v string) error {
+			metadata := newPart.Metadata()
+			response.Get(i).Metadata().Iter(func(k, v string) error {
 				metadata.Set(k, v)
 				return nil
 			})

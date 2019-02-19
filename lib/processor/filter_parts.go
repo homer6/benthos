@@ -26,10 +26,12 @@ import (
 
 	"github.com/Jeffail/benthos/lib/log"
 	"github.com/Jeffail/benthos/lib/message"
+	"github.com/Jeffail/benthos/lib/message/tracing"
 	"github.com/Jeffail/benthos/lib/metrics"
 	"github.com/Jeffail/benthos/lib/processor/condition"
 	"github.com/Jeffail/benthos/lib/response"
 	"github.com/Jeffail/benthos/lib/types"
+	olog "github.com/opentracing/opentracing-go/log"
 )
 
 //------------------------------------------------------------------------------
@@ -115,10 +117,21 @@ func (c *FilterParts) ProcessMessage(msg types.Message) ([]types.Message, types.
 
 	newMsg := message.New(nil)
 
+	spans := tracing.CreateChildSpans(msg, TypeFilterParts)
+	defer func() {
+		for _, s := range spans {
+			s.Finish()
+		}
+	}()
+
 	for i := 0; i < msg.Len(); i++ {
 		if c.condition.Check(message.Lock(msg, i)) {
 			newMsg.Append(msg.Get(i).Copy())
 		} else {
+			spans[i].LogFields(
+				olog.String("event", "dropped"),
+				olog.String("type", "filtered"),
+			)
 			c.mDropped.Incr(1)
 		}
 	}

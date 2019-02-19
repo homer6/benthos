@@ -30,6 +30,7 @@ import (
 
 	"github.com/Jeffail/benthos/lib/log"
 	"github.com/Jeffail/benthos/lib/message"
+	"github.com/Jeffail/benthos/lib/message/tracing"
 	"github.com/Jeffail/benthos/lib/metrics"
 	"github.com/Jeffail/benthos/lib/response"
 	"github.com/Jeffail/benthos/lib/types"
@@ -305,7 +306,7 @@ func (d *Archive) ProcessMessage(msg types.Message) ([]types.Message, types.Resp
 
 	newMsg := msg.Copy()
 
-	spans := CreateSpans(newMsg, TypeArchive)
+	spans := tracing.CreateChildSpans(newMsg, TypeArchive)
 	newPart, err := d.archive(d.createHeaderFunc(msg), msg)
 	if err != nil {
 		newMsg.Iter(func(i int, p types.Part) error {
