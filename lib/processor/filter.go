@@ -110,7 +110,7 @@ func NewFilter(
 func (c *Filter) ProcessMessage(msg types.Message) ([]types.Message, types.Response) {
 	c.mCount.Incr(1)
 
-	spans := tracing.CreateChildSpans(msg, TypeFilter)
+	spans := tracing.CreateChildSpans(TypeFilter, msg)
 	defer func() {
 		for _, s := range spans {
 			s.Finish()

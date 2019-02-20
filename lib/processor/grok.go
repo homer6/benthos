@@ -172,7 +172,7 @@ func (g *Grok) ProcessMessage(msg types.Message) ([]types.Message, types.Respons
 		return nil
 	}
 
-	IteratePartsWithSpan(newMsg, TypeGrok, g.parts, proc)
+	IteratePartsWithSpan(TypeGrok, g.parts, newMsg, proc)
 
 	msgs := [1]types.Message{newMsg}
 

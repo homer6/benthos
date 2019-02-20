@@ -107,7 +107,7 @@ func NewMergeJSON(
 func (p *MergeJSON) ProcessMessage(msg types.Message) ([]types.Message, types.Response) {
 	p.mCount.Incr(1)
 
-	spans := tracing.CreateChildSpans(msg, TypeMergeJSON)
+	spans := tracing.CreateChildSpans(TypeMergeJSON, msg)
 	defer func() {
 		for _, s := range spans {
 			s.Finish()

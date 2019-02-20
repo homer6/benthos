@@ -294,7 +294,7 @@ func (d *Unarchive) ProcessMessage(msg types.Message) ([]types.Message, types.Re
 			return nil
 		}
 
-		span := tracing.CreateChildSpan(part, TypeUnarchive)
+		span := tracing.CreateChildSpan(TypeUnarchive, part)
 		defer span.Finish()
 
 		newParts, err := d.unarchive(part)

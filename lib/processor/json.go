@@ -573,7 +573,7 @@ func (p *JSON) ProcessMessage(msg types.Message) ([]types.Message, types.Respons
 		return nil
 	}
 
-	IteratePartsWithSpan(newMsg, TypeJSON, p.parts, proc)
+	IteratePartsWithSpan(TypeJSON, p.parts, newMsg, proc)
 
 	msgs := [1]types.Message{newMsg}
 

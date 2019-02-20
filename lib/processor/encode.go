@@ -143,7 +143,7 @@ func (c *Encode) ProcessMessage(msg types.Message) ([]types.Message, types.Respo
 		return nil, response.NewAck()
 	}
 
-	IteratePartsWithSpan(newMsg, TypeEncode, c.conf.Parts, proc)
+	IteratePartsWithSpan(TypeEncode, c.conf.Parts, newMsg, proc)
 
 	c.mBatchSent.Incr(1)
 	c.mSent.Incr(int64(newMsg.Len()))

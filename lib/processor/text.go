@@ -329,7 +329,7 @@ func (t *Text) ProcessMessage(msg types.Message) ([]types.Message, types.Respons
 		return nil
 	}
 
-	IteratePartsWithSpan(newMsg, TypeText, t.parts, proc)
+	IteratePartsWithSpan(TypeText, t.parts, newMsg, proc)
 
 	msgs := [1]types.Message{newMsg}
 

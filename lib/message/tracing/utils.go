@@ -38,7 +38,7 @@ func GetSpan(p types.Part) opentracing.Span {
 
 // CreateChildSpan takes a message part, extracts an existing span if there is
 // one and returns child span.
-func CreateChildSpan(part types.Part, operationName string) opentracing.Span {
+func CreateChildSpan(operationName string, part types.Part) opentracing.Span {
 	span := GetSpan(part)
 	if span == nil {
 		span = opentracing.StartSpan(operationName)
@@ -54,10 +54,10 @@ func CreateChildSpan(part types.Part, operationName string) opentracing.Span {
 // CreateChildSpans takes a message, extracts spans per message part and returns
 // a slice of child spans. The length of the returned slice is guaranteed to
 // match the message size.
-func CreateChildSpans(msg types.Message, operationName string) []opentracing.Span {
+func CreateChildSpans(operationName string, msg types.Message) []opentracing.Span {
 	spans := make([]opentracing.Span, msg.Len())
 	msg.Iter(func(i int, part types.Part) error {
-		spans[i] = CreateChildSpan(part, operationName)
+		spans[i] = CreateChildSpan(operationName, part)
 		return nil
 	})
 	return spans
@@ -66,7 +66,7 @@ func CreateChildSpans(msg types.Message, operationName string) []opentracing.Spa
 // WithChildSpans takes a message, extracts spans per message part, creates new
 // child spans, and returns a new message with those spans embedded. The
 // original message is unchanged.
-func WithChildSpans(msg types.Message, operationName string) types.Message {
+func WithChildSpans(operationName string, msg types.Message) types.Message {
 	parts := make([]types.Part, msg.Len())
 	msg.Iter(func(i int, part types.Part) error {
 		ctx := message.GetContext(part)
@@ -89,12 +89,38 @@ func WithChildSpans(msg types.Message, operationName string) types.Message {
 	return newMsg
 }
 
+// WithSiblingSpans takes a message, extracts spans per message part, creates
+// new sibling spans, and returns a new message with those spans embedded. The
+// original message is unchanged.
+func WithSiblingSpans(operationName string, msg types.Message) types.Message {
+	parts := make([]types.Part, msg.Len())
+	msg.Iter(func(i int, part types.Part) error {
+		ctx := message.GetContext(part)
+		span := opentracing.SpanFromContext(ctx)
+		if span == nil {
+			span = opentracing.StartSpan(operationName)
+		} else {
+			span = opentracing.StartSpan(
+				operationName,
+				opentracing.FollowsFrom(span.Context()),
+			)
+		}
+		ctx = opentracing.ContextWithSpan(ctx, span)
+		parts[i] = message.WithContext(ctx, part)
+		return nil
+	})
+
+	newMsg := message.New(nil)
+	newMsg.SetAll(parts)
+	return newMsg
+}
+
 //------------------------------------------------------------------------------
 
 // IterateWithChildSpans iterates all the parts of a message and, for each part,
 // creates a new span from an existing span attached to the part and calls a
 // func with that span before finishing the child span.
-func IterateWithChildSpans(msg types.Message, operationName string, iter func(int, opentracing.Span, types.Part) error) error {
+func IterateWithChildSpans(operationName string, msg types.Message, iter func(int, opentracing.Span, types.Part) error) error {
 	return msg.Iter(func(i int, p types.Part) error {
 		span, _ := opentracing.StartSpanFromContext(message.GetContext(p), operationName)
 		err := iter(i, span, p)
@@ -122,7 +148,7 @@ func InitSpans(operationName string, msg types.Message) {
 
 // InitSpansFromParent sets up OpenTracing spans as children of a parent span on
 // each message part if one does not already exist.
-func InitSpansFromParent(parent opentracing.SpanContext, operationName string, msg types.Message) {
+func InitSpansFromParent(operationName string, parent opentracing.SpanContext, msg types.Message) {
 	tracedParts := make([]types.Part, msg.Len())
 	msg.Iter(func(i int, p types.Part) error {
 		if GetSpan(p) != nil {

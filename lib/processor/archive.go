@@ -306,7 +306,7 @@ func (d *Archive) ProcessMessage(msg types.Message) ([]types.Message, types.Resp
 
 	newMsg := msg.Copy()
 
-	spans := tracing.CreateChildSpans(newMsg, TypeArchive)
+	spans := tracing.CreateChildSpans(TypeArchive, newMsg)
 	newPart, err := d.archive(d.createHeaderFunc(msg), msg)
 	if err != nil {
 		newMsg.Iter(func(i int, p types.Part) error {

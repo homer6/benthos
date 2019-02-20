@@ -320,7 +320,7 @@ func (h *HTTPClient) loop() {
 		}
 
 		if msgOut != nil {
-			tracing.InitSpans("http_client", msgOut)
+			tracing.InitSpans("input_http_client", msgOut)
 			select {
 			case h.transactions <- types.NewTransaction(msgOut, resOut):
 			case <-h.closeChan:

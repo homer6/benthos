@@ -172,7 +172,7 @@ func (c *Hash) ProcessMessage(msg types.Message) ([]types.Message, types.Respons
 		return nil, response.NewAck()
 	}
 
-	IteratePartsWithSpan(newMsg, TypeHash, c.conf.Parts, proc)
+	IteratePartsWithSpan(TypeHash, c.conf.Parts, newMsg, proc)
 
 	c.mBatchSent.Incr(1)
 	c.mSent.Incr(int64(newMsg.Len()))

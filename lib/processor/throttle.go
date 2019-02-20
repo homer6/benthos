@@ -106,7 +106,7 @@ func NewThrottle(
 func (m *Throttle) ProcessMessage(msg types.Message) ([]types.Message, types.Response) {
 	m.mCount.Incr(1)
 
-	spans := tracing.CreateChildSpans(msg, TypeThrottle)
+	spans := tracing.CreateChildSpans(TypeThrottle, msg)
 	defer func() {
 		for _, s := range spans {
 			s.Finish()

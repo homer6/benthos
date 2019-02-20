@@ -456,7 +456,7 @@ func (a *AWK) ProcessMessage(msg types.Message) ([]types.Message, types.Response
 		return nil
 	}
 
-	IteratePartsWithSpan(newMsg, TypeAWK, a.parts, proc)
+	IteratePartsWithSpan(TypeAWK, a.parts, newMsg, proc)
 
 	msgs := [1]types.Message{newMsg}
 

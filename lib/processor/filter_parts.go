@@ -117,7 +117,7 @@ func (c *FilterParts) ProcessMessage(msg types.Message) ([]types.Message, types.
 
 	newMsg := message.New(nil)
 
-	spans := tracing.CreateChildSpans(msg, TypeFilterParts)
+	spans := tracing.CreateChildSpans(TypeFilterParts, msg)
 	defer func() {
 		for _, s := range spans {
 			s.Finish()

@@ -136,7 +136,7 @@ func (g *GroupByValue) ProcessMessage(msg types.Message) ([]types.Message, types
 	groupKeys := []string{}
 	groupMap := map[string]types.Message{}
 
-	spans := tracing.CreateChildSpans(msg, TypeGroupByValue)
+	spans := tracing.CreateChildSpans(TypeGroupByValue, msg)
 
 	msg.Iter(func(i int, p types.Part) error {
 		v := g.value.Get(message.Lock(msg, i))

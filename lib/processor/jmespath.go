@@ -180,7 +180,7 @@ func (p *JMESPath) ProcessMessage(msg types.Message) ([]types.Message, types.Res
 		return nil
 	}
 
-	IteratePartsWithSpan(newMsg, TypeJMESPath, p.parts, proc)
+	IteratePartsWithSpan(TypeJMESPath, p.parts, newMsg, proc)
 
 	msgs := [1]types.Message{newMsg}
 

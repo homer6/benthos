@@ -196,7 +196,7 @@ func (d *Decompress) ProcessMessage(msg types.Message) ([]types.Message, types.R
 		return nil, response.NewAck()
 	}
 
-	IteratePartsWithSpan(newMsg, TypeDecompress, d.conf.Parts, proc)
+	IteratePartsWithSpan(TypeDecompress, d.conf.Parts, newMsg, proc)
 
 	d.mBatchSent.Incr(1)
 	d.mSent.Incr(int64(newMsg.Len()))

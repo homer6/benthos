@@ -165,7 +165,7 @@ func ClearFail(part types.Part) {
 // along with a tracing span for that part. If an error is returned the part is
 // flagged as failed and the span has the error logged.
 func IteratePartsWithSpan(
-	msg types.Message, operationName string, parts []int,
+	operationName string, parts []int, msg types.Message,
 	iter func(int, opentracing.Span, types.Part) error,
 ) {
 	exec := func(i int) {

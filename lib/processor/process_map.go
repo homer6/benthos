@@ -284,7 +284,7 @@ func NewProcessMap(
 // ProcessMessage applies the processor to a message, either creating >0
 // resulting messages or a response to be sent back to the message source.
 func (p *ProcessMap) ProcessMessage(msg types.Message) ([]types.Message, types.Response) {
-	propMsg := tracing.WithChildSpans(msg, TypeProcessMap)
+	propMsg := tracing.WithChildSpans(TypeProcessMap, msg)
 	alignedResult, err := p.CreateResult(propMsg)
 	defer tracing.FinishSpans(propMsg)
 

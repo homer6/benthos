@@ -186,7 +186,7 @@ func (c *Compress) ProcessMessage(msg types.Message) ([]types.Message, types.Res
 		return nil, response.NewAck()
 	}
 
-	IteratePartsWithSpan(newMsg, TypeCompress, c.conf.Parts, proc)
+	IteratePartsWithSpan(TypeCompress, c.conf.Parts, newMsg, proc)
 
 	c.mBatchSent.Incr(1)
 	c.mSent.Incr(int64(newMsg.Len()))

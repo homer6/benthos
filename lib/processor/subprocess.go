@@ -321,7 +321,7 @@ func (e *Subprocess) ProcessMessage(msg types.Message) ([]types.Message, types.R
 	result := msg.Copy()
 
 	proc := func(i int) error {
-		span := tracing.CreateChildSpan(result.Get(i), TypeSubprocess)
+		span := tracing.CreateChildSpan(TypeSubprocess, result.Get(i))
 		defer span.Finish()
 
 		results := [][]byte{}

@@ -185,7 +185,7 @@ func (r *Reader) loop() {
 			mRcvd.Incr(1)
 		}
 
-		tracing.InitSpans(r.typeStr, msg)
+		tracing.InitSpans("input_"+r.typeStr, msg)
 		select {
 		case r.transactions <- types.NewTransaction(msg, r.responses):
 		case <-r.closeChan:

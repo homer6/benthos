@@ -135,7 +135,7 @@ func (w *Writer) loop() {
 			return
 		}
 
-		spans := tracing.CreateChildSpans(ts.Payload, w.typeStr)
+		spans := tracing.CreateChildSpans("output_"+w.typeStr, ts.Payload)
 		err := w.writer.Write(ts.Payload)
 
 		// If our writer says it is not connected.

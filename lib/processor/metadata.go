@@ -203,7 +203,7 @@ func (p *Metadata) ProcessMessage(msg types.Message) ([]types.Message, types.Res
 		return nil
 	}
 
-	IteratePartsWithSpan(newMsg, TypeMetadata, p.parts, proc)
+	IteratePartsWithSpan(TypeMetadata, p.parts, newMsg, proc)
 
 	msgs := [1]types.Message{newMsg}
 

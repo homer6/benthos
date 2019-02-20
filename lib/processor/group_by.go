@@ -241,7 +241,7 @@ func (g *GroupBy) ProcessMessage(msg types.Message) ([]types.Message, types.Resp
 	}
 	groupless := message.New(nil)
 
-	spans := tracing.CreateChildSpans(msg, TypeGroupBy)
+	spans := tracing.CreateChildSpans(TypeGroupBy, msg)
 
 	msg.Iter(func(i int, p types.Part) error {
 		for j, group := range g.groups {

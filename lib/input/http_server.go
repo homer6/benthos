@@ -263,9 +263,9 @@ func (h *HTTPServer) postHandler(w http.ResponseWriter, r *http.Request) {
 	// Try to either extract parent span from headers, or create a new one.
 	carrier := opentracing.HTTPHeadersCarrier(r.Header)
 	if clientSpanContext, serr := opentracing.GlobalTracer().Extract(opentracing.HTTPHeaders, carrier); serr == nil {
-		tracing.InitSpansFromParent(clientSpanContext, "http_server_post", msg)
+		tracing.InitSpansFromParent("input_http_server_post", clientSpanContext, msg)
 	} else {
-		tracing.InitSpans("http_server_post", msg)
+		tracing.InitSpans("input_http_server_post", msg)
 	}
 	defer tracing.FinishSpans(msg)
 
@@ -359,7 +359,7 @@ func (h *HTTPServer) wsHandler(w http.ResponseWriter, r *http.Request) {
 		for _, c := range r.Cookies() {
 			meta.Set(c.Name, c.Value)
 		}
-		tracing.InitSpans("http_server_websocket", msg)
+		tracing.InitSpans("input_http_server_websocket", msg)
 
 		select {
 		case h.transactions <- types.NewTransaction(msg, resChan):

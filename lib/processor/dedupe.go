@@ -223,7 +223,7 @@ func (d *Dedupe) ProcessMessage(msg types.Message) ([]types.Message, types.Respo
 	extractedHash := false
 	hasher := d.hasherFunc()
 
-	spans := tracing.CreateChildSpans(msg, TypeDedupe)
+	spans := tracing.CreateChildSpans(TypeDedupe, msg)
 	defer func() {
 		for _, s := range spans {
 			s.Finish()

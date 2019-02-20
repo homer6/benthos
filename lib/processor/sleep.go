@@ -115,7 +115,7 @@ func NewSleep(
 func (s *Sleep) ProcessMessage(msg types.Message) ([]types.Message, types.Response) {
 	s.mCount.Incr(1)
 
-	spans := tracing.CreateChildSpans(msg, TypeSleep)
+	spans := tracing.CreateChildSpans(TypeSleep, msg)
 	defer func() {
 		for _, span := range spans {
 			span.Finish()

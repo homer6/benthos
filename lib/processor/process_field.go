@@ -179,7 +179,7 @@ func (p *ProcessField) ProcessMessage(msg types.Message) (msgs []types.Message, 
 		reqMsg.Append(reqPart)
 	}
 
-	propMsg := tracing.WithChildSpans(reqMsg, TypeProcessField)
+	propMsg := tracing.WithChildSpans(TypeProcessField, reqMsg)
 	resultMsgs, _ := ExecuteAll(p.children, propMsg)
 	resMsg := message.New(nil)
 	for _, rMsg := range resultMsgs {

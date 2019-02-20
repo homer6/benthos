@@ -124,7 +124,7 @@ func (w *LineWriter) loop() {
 			return
 		}
 
-		spans := tracing.CreateChildSpans(ts.Payload, w.typeStr)
+		spans := tracing.CreateChildSpans("output_"+w.typeStr, ts.Payload)
 
 		var err error
 		if ts.Payload.Len() == 1 {
