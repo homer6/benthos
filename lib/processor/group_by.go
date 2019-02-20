@@ -246,10 +246,12 @@ func (g *GroupBy) ProcessMessage(msg types.Message) ([]types.Message, types.Resp
 	msg.Iter(func(i int, p types.Part) error {
 		for j, group := range g.groups {
 			if group.Condition.Check(message.Lock(msg, i)) {
+				groupStr := strconv.Itoa(j)
 				spans[i].LogFields(
 					olog.String("event", "grouped"),
-					olog.String("type", strconv.Itoa(j)),
+					olog.String("type", groupStr),
 				)
+				spans[i].SetTag("group", groupStr)
 				groups[j].Append(p.Copy())
 				g.mGroupPass[j].Incr(1)
 				return nil
@@ -260,6 +262,7 @@ func (g *GroupBy) ProcessMessage(msg types.Message) ([]types.Message, types.Resp
 			olog.String("event", "grouped"),
 			olog.String("type", "default"),
 		)
+		spans[i].SetTag("group", "default")
 		groupless.Append(p.Copy())
 		g.mGroupDefault.Incr(1)
 		return nil

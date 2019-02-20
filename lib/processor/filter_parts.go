@@ -127,11 +127,13 @@ func (c *FilterParts) ProcessMessage(msg types.Message) ([]types.Message, types.
 	for i := 0; i < msg.Len(); i++ {
 		if c.condition.Check(message.Lock(msg, i)) {
 			newMsg.Append(msg.Get(i).Copy())
+			spans[i].SetTag("result", true)
 		} else {
 			spans[i].LogFields(
 				olog.String("event", "dropped"),
 				olog.String("type", "filtered"),
 			)
+			spans[i].SetTag("result", false)
 			c.mDropped.Incr(1)
 		}
 	}

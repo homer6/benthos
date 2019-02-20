@@ -24,9 +24,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Jeffail/benthos/lib/message/tracing"
-
 	"github.com/Jeffail/benthos/lib/log"
+	"github.com/Jeffail/benthos/lib/message/tracing"
 	"github.com/Jeffail/benthos/lib/metrics"
 	"github.com/Jeffail/benthos/lib/types"
 )
@@ -107,14 +106,16 @@ func (m *Throttle) ProcessMessage(msg types.Message) ([]types.Message, types.Res
 	m.mCount.Incr(1)
 
 	spans := tracing.CreateChildSpans(TypeThrottle, msg)
-	defer func() {
-		for _, s := range spans {
-			s.Finish()
-		}
-	}()
 
+	var throttleFor time.Duration
 	if since := time.Since(m.lastBatch); m.duration > since {
-		time.Sleep(m.duration - since)
+		throttleFor = m.duration - since
+		time.Sleep(throttleFor)
+	}
+
+	for _, s := range spans {
+		s.SetTag("throttled_for", throttleFor.String())
+		s.Finish()
 	}
 
 	m.lastBatch = time.Now()

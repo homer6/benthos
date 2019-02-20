@@ -144,6 +144,7 @@ func (g *GroupByValue) ProcessMessage(msg types.Message) ([]types.Message, types
 			olog.String("event", "grouped"),
 			olog.String("type", v),
 		)
+		spans[i].SetTag("group", v)
 		if group, exists := groupMap[v]; exists {
 			group.Append(p)
 		} else {

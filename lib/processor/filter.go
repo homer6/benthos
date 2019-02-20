@@ -111,19 +111,19 @@ func (c *Filter) ProcessMessage(msg types.Message) ([]types.Message, types.Respo
 	c.mCount.Incr(1)
 
 	spans := tracing.CreateChildSpans(TypeFilter, msg)
-	defer func() {
-		for _, s := range spans {
-			s.Finish()
-		}
-	}()
 
-	if !c.condition.Check(msg) {
-		for _, s := range spans {
+	filterRes := c.condition.Check(msg)
+	for _, s := range spans {
+		if !filterRes {
 			s.LogFields(
 				olog.String("event", "dropped"),
 				olog.String("type", "filtered"),
 			)
 		}
+		s.SetTag("result", filterRes)
+		s.Finish()
+	}
+	if !filterRes {
 		c.mDropped.Incr(int64(msg.Len()))
 		return nil, response.NewAck()
 	}
