@@ -7,7 +7,12 @@ A tracer type represents a destination for Benthos to send opentracing events to
 such as Jaeger.
 
 Many Benthos components create spans on messages passing through a pipeline, and
-so opentracing is a great way to analyse the pathways of individual messages.
+so opentracing is a great way to analyse the pathways of individual messages as
+they progress through a Benthos instance.
+
+WARNING: Although the configuration spec of this component is stable the format
+of spans, tags and logs created by Benthos is subject to change as it is tuned
+for improvement.
 
 ## `jaeger`
 
